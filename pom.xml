@@ -341,8 +341,8 @@
     </dependencyManagement>
 
     <modules>
-        <module>one-admin</module>
-        <module>one-common</module>
+        <module>one-boot</module>
+<!--        <module>one-common</module>-->
         <!--<module>ruoyi-extend</module>-->
         <!--<module>ruoyi-modules</module>-->
     </modules>
