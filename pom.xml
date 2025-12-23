@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>my.liwncy</groupId>
+    <groupId>me.liwncy</groupId>
     <artifactId>one-crawler</artifactId>
     <version>${revision}</version>
 
@@ -13,7 +13,7 @@
     <description>one-crawler</description>
 
     <properties>
-        <revision>5.3.1-BETA</revision>
+        <revision>0.1.0</revision>
         <spring-boot.version>3.4.3</spring-boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -51,6 +51,10 @@
         <anyline.version>8.7.2-20250101</anyline.version>
         <!--工作流配置-->
         <warm-flow.version>1.6.7</warm-flow.version>
+        <!-- 爬虫配置 -->
+        <webmagic.version>1.0.3</webmagic.version>
+        <selenium.version>3.141.59</selenium.version>
+        <phantomjsdriver.version>1.2.0</phantomjsdriver.version>
 
         <!-- 插件版本 -->
         <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
@@ -133,8 +137,8 @@
 
             <!-- common 的依赖配置-->
             <dependency>
-                <groupId>org.dromara</groupId>
-                <artifactId>ruoyi-common-bom</artifactId>
+                <groupId>me.liwncy</groupId>
+                <artifactId>one-common-bom</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -193,13 +197,6 @@
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-core</artifactId>
                 <version>${satoken.version}</version>
-            </dependency>
-
-            <!-- dynamic-datasource 多数据源-->
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
-                <version>${dynamic-ds.version}</version>
             </dependency>
 
             <dependency>
@@ -337,14 +334,58 @@
                 <version>${fastjson.version}</version>
             </dependency>
 
+            <!-- WebMagic 核心依赖 -->
+            <dependency>
+                <groupId>us.codecraft</groupId>
+                <artifactId>webmagic-core</artifactId>
+                <version>${webmagic.version}</version>
+                <!-- 排除低版本依赖冲突 -->
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>us.codecraft</groupId>
+                <artifactId>webmagic-extension</artifactId>
+                <version>${webmagic.version}</version>
+            </dependency>
+            <!--  -->
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-java</artifactId>
+                <version>${selenium.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.detro</groupId>
+                <artifactId>phantomjsdriver</artifactId>
+                <version>${phantomjsdriver.version}</version>
+            </dependency>
+
+            <!-- DEMO模块 -->
+            <dependency>
+                <groupId>me.liwncy</groupId>
+                <artifactId>one-demo</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- WebMagic模块 -->
+            <dependency>
+                <groupId>me.liwncy</groupId>
+                <artifactId>one-webmagic</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
     <modules>
         <module>one-boot</module>
-<!--        <module>one-common</module>-->
-        <!--<module>ruoyi-extend</module>-->
-        <!--<module>ruoyi-modules</module>-->
+        <module>one-common</module>
+        <module>one-extend</module>
+        <module>one-modules</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -1,0 +1,35 @@
+# 开发环境配置
+server:
+  # 服务端口
+  port: 9090
+  servlet:
+    # 应用访问路径
+    context-path: /
+
+# Spring配置
+spring:
+  application:
+    name: one-crawler
+  threads:
+    # 虚拟线程(仅jdk21可用)
+    virtual:
+      enabled: false
+  messages:
+    use-code-as-default-message: true
+  profiles:
+    active: @profiles.active@
+
+# MyBatis-plus配置
+mybatis-plus:
+  # 多包名使用 例如 org.dromara.**.mapper,org.xxx.**.mapper
+  mapper-package: me.liwncy.**.mapper
+  # 对应的 XML 文件位置
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
+  # 实体扫描，多个package用逗号或者分号分隔
+  type-aliases-package: me.liwncy.**.domain
+  global-config:
+    dbConfig:
+      # 主键类型
+      # AUTO 自增 NONE 空 INPUT 用户输入 ASSIGN_ID 雪花 ASSIGN_UUID 唯一 UUID
+      # 如需改为自增 需要将数据库表全部设置为自增
+      idType: ASSIGN_ID

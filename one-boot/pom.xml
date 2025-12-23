@@ -3,13 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>my.liwncy</groupId>
+        <groupId>me.liwncy</groupId>
         <artifactId>one-crawler</artifactId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>my.liwncy</groupId>
+    <groupId>me.liwncy</groupId>
     <artifactId>one-boot</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
@@ -26,37 +26,10 @@
             <artifactId>mysql-connector-j</artifactId>
         </dependency>
 
-        <!--        &lt;!&ndash; mp支持的数据库均支持 只需要增加对应的jdbc依赖即可 &ndash;&gt;-->
-        <!--        &lt;!&ndash; Oracle &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.oracle.database.jdbc</groupId>-->
-        <!--            <artifactId>ojdbc8</artifactId>-->
-        <!--        </dependency>-->
-        <!--        &lt;!&ndash; 兼容oracle低版本 &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.oracle.database.nls</groupId>-->
-        <!--            <artifactId>orai18n</artifactId>-->
-        <!--        </dependency>-->
-        <!--        &lt;!&ndash; PostgreSql &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.postgresql</groupId>-->
-        <!--            <artifactId>postgresql</artifactId>-->
-        <!--        </dependency>-->
-        <!--        &lt;!&ndash; SqlServer &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.microsoft.sqlserver</groupId>-->
-        <!--            <artifactId>mssql-jdbc</artifactId>-->
-        <!--        </dependency>-->
-
-        <!--<dependency>-->
-        <!--    <groupId>org.dromara</groupId>-->
-        <!--    <artifactId>ruoyi-common-doc</artifactId>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--    <groupId>org.dromara</groupId>-->
-        <!--    <artifactId>ruoyi-system</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>de.codecentric</groupId>
@@ -70,6 +43,16 @@
         </dependency>
 
 
+        <!--   业务模块   -->
+        <dependency>
+            <groupId>me.liwncy</groupId>
+            <artifactId>one-demo</artifactId>
+        </dependency>
+        <!-- WebMagic模块 -->
+        <dependency>
+            <groupId>me.liwncy</groupId>
+            <artifactId>one-webmagic</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

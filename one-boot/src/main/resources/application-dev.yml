@@ -1,0 +1,7 @@
+spring:
+  # 数据源配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/one-crawler?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowMultiQueries=true&tinyInt1isBit=false&allowLoadLocalInfile=true&allowLocalInfile=true&allowUrlInLocalInfile=true&allowPublicKeyRetrieval=true&allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRet
+    username: root
+    password: root123
+    driver-class-name: com.mysql.jdbc.Driver
