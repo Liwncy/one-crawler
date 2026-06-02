@@ -32,16 +32,19 @@
         <dependency>
             <groupId>me.liwncy</groupId>
             <artifactId>one-common-core</artifactId>
+            <version>${revision}</version>
         </dependency>
         <!-- web模块 -->
         <dependency>
             <groupId>me.liwncy</groupId>
             <artifactId>one-common-web</artifactId>
+            <version>${revision}</version>
         </dependency>
         <!-- 数据库模块 -->
         <dependency>
             <groupId>me.liwncy</groupId>
             <artifactId>one-common-mybatis</artifactId>
+            <version>${revision}</version>
         </dependency>
 
     </dependencies>

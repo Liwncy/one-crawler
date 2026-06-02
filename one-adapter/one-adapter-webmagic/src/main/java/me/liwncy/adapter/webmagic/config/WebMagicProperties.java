@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  */
 @Data
 @Component
-@ConfigurationProperties(prefix = "one.crawler.spiders")
+@ConfigurationProperties(prefix = "one.crawler.webmagic")
 public class WebMagicProperties {
 
     private int retryTimes = 3;

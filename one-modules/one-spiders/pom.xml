@@ -32,28 +32,33 @@
         <dependency>
             <groupId>me.liwncy</groupId>
             <artifactId>one-common-core</artifactId>
+            <version>${revision}</version>
         </dependency>
         <!-- web模块 -->
         <dependency>
             <groupId>me.liwncy</groupId>
             <artifactId>one-common-web</artifactId>
+            <version>${revision}</version>
         </dependency>
         <!-- 数据库模块 -->
         <dependency>
             <groupId>me.liwncy</groupId>
             <artifactId>one-common-mybatis</artifactId>
+            <version>${revision}</version>
         </dependency>
 
         <!-- 爬虫抽象模块 -->
         <dependency>
             <groupId>me.liwncy</groupId>
             <artifactId>one-common-crawler</artifactId>
+            <version>${revision}</version>
         </dependency>
 
         <!-- WebMagic适配层 -->
         <dependency>
             <groupId>me.liwncy</groupId>
             <artifactId>one-adapter-webmagic</artifactId>
+            <version>${revision}</version>
         </dependency>
 
 

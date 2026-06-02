@@ -441,6 +441,16 @@ http://localhost:9090/
 - 转换为 Apifox 可进一步处理的 JSON 数据
 - 输出到 `one.crawler.output-path` 目录
 
+开发调试入口：
+
+- IDE 直接运行：`me.liwncy.spiders.SpiderDevApplication`
+- 可在类内修改 `DEFAULT_SPIDER_NAME` 手动切换默认 spider
+- 也可通过命令行参数切换：第一个参数是 `spiderName`，第二个参数是输出目录
+- 默认输出目录为仓库根目录下的 `_data/`，而不是 `one-spiders` 运行目录下
+- 输出目录支持指定为任意磁盘绝对路径，例如：`D:/crawler-output`
+- PowerShell 脚本：`scripts/run-spider-dev.ps1`
+- 例如运行 `yujn-api` 时，默认输出文件为：`<仓库根目录>/data/yujn-api-apifox.jsonl`
+
 ---
 
 ## 10. 代码生成器使用说明
