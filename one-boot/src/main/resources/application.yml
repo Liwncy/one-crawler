@@ -19,6 +19,15 @@ spring:
   profiles:
     active: @profiles.active@
 
+one:
+  crawler:
+    output-path: ./data
+    webmagic:
+      retry-times: 3
+      sleep-time: 1000
+      timeout: 10000
+      charset: UTF-8
+
 # MyBatis-plus配置
 mybatis-plus:
   # 多包名使用 例如 org.dromara.**.mapper,org.xxx.**.mapper

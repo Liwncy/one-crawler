@@ -19,9 +19,9 @@ public class CommonModuleGenerator {
     private static final String GROUP_ID = "me.liwncy";
     private static final String PARENT_MODULE = "one-common";
     // todo 子模块相关配置
-    private static final String MODULE_NAME = "one-common-webmagic";
-    private static final String MODULE_INFO = "爬虫服务";
-    private static final String BASE_PACKAGE = GROUP_ID + ".common.webmagic";
+    private static final String MODULE_NAME = "one-common-crawler";
+    private static final String MODULE_INFO = "爬虫抽象服务";
+    private static final String BASE_PACKAGE = GROUP_ID + ".common.crawler";
 
     // 项目输出目录
     private static final String MODULE_PATH = getGeneratePath();

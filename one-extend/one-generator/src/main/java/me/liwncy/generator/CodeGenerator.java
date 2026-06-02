@@ -32,7 +32,7 @@ public class CodeGenerator {
     private static final String AUTHOR = "wanchang.li" ;
 
     // 基础包名 todo 根据项目结构调整
-    private static final String TABLE_NAME = "sys_user" ;
+    private static final String TABLE_NAME = "test_demo" ;
     private static final String BASE_PACKAGE = "me.liwncy.demo" ;
 
     // ================= 修改开始：适配你的项目路径结构 =================

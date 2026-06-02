@@ -48,10 +48,10 @@
             <groupId>me.liwncy</groupId>
             <artifactId>one-demo</artifactId>
         </dependency>
-        <!-- WebMagic模块 -->
+        <!-- Spider业务模块 -->
         <dependency>
             <groupId>me.liwncy</groupId>
-            <artifactId>one-webmagic</artifactId>
+            <artifactId>one-spiders</artifactId>
         </dependency>
     </dependencies>
 

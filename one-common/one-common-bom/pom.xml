@@ -25,6 +25,12 @@
                 <artifactId>one-common-core</artifactId>
                 <version>${revision}</version>
             </dependency>
+            <!-- 爬虫抽象模块 -->
+            <dependency>
+                <groupId>me.liwncy</groupId>
+                <artifactId>one-common-crawler</artifactId>
+                <version>${revision}</version>
+            </dependency>
             <!-- web模块 -->
             <dependency>
                 <groupId>me.liwncy</groupId>
@@ -37,13 +43,6 @@
                 <artifactId>one-common-mybatis</artifactId>
                 <version>${revision}</version>
             </dependency>
-            <!-- 爬虫服务 -->
-            <dependency>
-                <groupId>me.liwncy</groupId>
-                <artifactId>one-common-webmagic</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
 
         </dependencies>
     </dependencyManagement>

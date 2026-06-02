@@ -145,6 +145,12 @@
             </dependency>
 
             <dependency>
+                <groupId>me.liwncy</groupId>
+                <artifactId>one-common-crawler</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
                 <version>${springdoc.version}</version>
@@ -371,10 +377,17 @@
                 <version>${revision}</version>
             </dependency>
 
-            <!-- WebMagic模块 -->
+            <!-- Spider业务模块 -->
             <dependency>
                 <groupId>me.liwncy</groupId>
-                <artifactId>one-webmagic</artifactId>
+                <artifactId>one-spiders</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- WebMagic适配层 -->
+            <dependency>
+                <groupId>me.liwncy</groupId>
+                <artifactId>one-adapter-webmagic</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -384,6 +397,7 @@
     <modules>
         <module>one-boot</module>
         <module>one-common</module>
+        <module>one-adapter</module>
         <module>one-extend</module>
         <module>one-modules</module>
     </modules>
@@ -396,8 +410,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>16</source>
-                    <target>16</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <annotationProcessorPaths>
                         <path>

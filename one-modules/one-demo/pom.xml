@@ -12,7 +12,7 @@
     <artifactId>one-demo</artifactId>
 
     <description>
-        one-demo  DEMO模块
+        one-demo  demo模块
     </description>
     <build>
         <plugins>
@@ -38,16 +38,11 @@
             <groupId>me.liwncy</groupId>
             <artifactId>one-common-web</artifactId>
         </dependency>
+        <!-- 数据库模块 -->
         <dependency>
             <groupId>me.liwncy</groupId>
             <artifactId>one-common-mybatis</artifactId>
         </dependency>
-        <!-- 爬虫模块 -->
-        <dependency>
-            <groupId>me.liwncy</groupId>
-            <artifactId>one-webmagic</artifactId>
-        </dependency>
-
 
     </dependencies>
 

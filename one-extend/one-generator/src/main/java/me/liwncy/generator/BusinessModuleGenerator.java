@@ -19,9 +19,9 @@ public class BusinessModuleGenerator {
     private static final String GROUP_ID = "me.liwncy";
     private static final String PARENT_MODULE = "one-modules";
     // todo 子模块相关配置
-    private static final String MODULE_NAME = "one-webmagic";
-    private static final String MODULE_INFO = "WebMagic模块";
-    private static final String BASE_PACKAGE = GROUP_ID + ".webmagic";
+    private static final String MODULE_NAME = "one-demo";
+    private static final String MODULE_INFO = "demo模块";
+    private static final String BASE_PACKAGE = GROUP_ID + ".demo";
 
     // 项目输出目录
     private static final String MODULE_PATH = getGeneratePath();
