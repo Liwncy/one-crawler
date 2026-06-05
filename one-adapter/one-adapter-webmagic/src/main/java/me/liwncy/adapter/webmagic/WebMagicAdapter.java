@@ -11,7 +11,6 @@ import me.liwncy.common.crawler.core.SpiderParseResult;
 import me.liwncy.common.crawler.pipeline.SpiderPipeline;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
-import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.Task;
@@ -21,6 +20,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * WebMagic 框架适配器。
@@ -47,13 +47,28 @@ public class WebMagicAdapter implements FrameworkAdapter {
 
         spider.beforeStart();
         try {
-            Spider.create(new DelegatingPageProcessor(spider, webMagicSite))
+            applySpiderCookies(spider);
+            AtomicReference<RuntimeException> processingFailure = new AtomicReference<>();
+            Spider.create(new DelegatingPageProcessor(spider, webMagicSite, processingFailure))
                 .addUrl(config.getStartUrls().toArray(String[]::new))
                 .addPipeline(new DelegatingPipeline(resolvePipelines(config), config))
                 .thread(Math.max(config.getThreadCount(), 1))
                 .run();
+            if (processingFailure.get() != null) {
+                throw processingFailure.get();
+            }
         } finally {
             spider.afterFinish();
+        }
+    }
+
+    private void applySpiderCookies(AbstractSpider spider) {
+        if (webMagicSite.getCookies() != null) {
+            webMagicSite.getCookies().clear();
+        }
+        Map<String, String> cookies = spider.getRequestCookies();
+        if (cookies != null && !cookies.isEmpty()) {
+            cookies.forEach(webMagicSite::addCookie);
         }
     }
 
@@ -83,10 +98,17 @@ public class WebMagicAdapter implements FrameworkAdapter {
 
         private final AbstractSpider spider;
         private final Site site;
+        private final AtomicReference<RuntimeException> processingFailure;
 
         @Override
         public void process(Page page) {
-            SpiderParseResult result = spider.parse(page.getRawText(), page.getUrl().toString());
+            SpiderParseResult result;
+            try {
+                result = spider.parse(page.getRawText(), page.getUrl().toString());
+            } catch (RuntimeException e) {
+                processingFailure.compareAndSet(null, e);
+                throw e;
+            }
             if (result == null) {
                 page.setSkip(true);
                 return;
@@ -113,7 +135,6 @@ public class WebMagicAdapter implements FrameworkAdapter {
         private final SpiderConfig config;
 
         @Override
-        @SuppressWarnings("unchecked")
         public void process(us.codecraft.webmagic.ResultItems resultItems, Task task) {
             List<CrawlResult> items = resultItems.get("items");
             if (items == null || items.isEmpty()) {

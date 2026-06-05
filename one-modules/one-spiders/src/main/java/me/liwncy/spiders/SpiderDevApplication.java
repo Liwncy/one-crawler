@@ -11,12 +11,26 @@ import me.liwncy.common.crawler.pipeline.FileSpiderPipeline;
 import me.liwncy.common.crawler.pipeline.SpiderPipeline;
 import me.liwncy.spiders.pipeline.WeiXinBQBDownloadPipeline;
 import me.liwncy.spiders.pipeline.YujnApiApiFoxFilePipeline;
+import me.liwncy.spiders.support.SpiderPaths;
+import me.liwncy.spiders.support.login.AbstractLoginSpider;
+import me.liwncy.spiders.support.login.FileLoginSessionStore;
+import me.liwncy.spiders.support.login.LoginConsoleSupport;
+import me.liwncy.spiders.support.login.LoginSupport;
+import me.liwncy.spiders.support.login.LoginSessionManager;
+import me.liwncy.spiders.support.login.LoginSpider;
+import me.liwncy.spiders.support.login.SeleniumManualLoginSupport;
+import me.liwncy.spiders.task.LoginDemoSpider;
 import me.liwncy.spiders.task.TestSpider;
 import me.liwncy.spiders.task.WeiXinBQBSpider;
+import me.liwncy.spiders.task.WenshuCourtSpider;
 import me.liwncy.spiders.task.YujnApiSpider;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,23 +47,31 @@ public class SpiderDevApplication {
     /**
      * 默认要运行的 spider，可在开发时手动切换。
      */
-    private static final String DEFAULT_SPIDER_NAME = YujnApiSpider.NAME;
+    private static final String DEFAULT_SPIDER_NAME = WenshuCourtSpider.NAME;
 
     /**
      * 默认输出目录名称。
      */
-    private static final String DEFAULT_OUTPUT_DIR_NAME = "_out/test";
+    private static final String DEFAULT_OUTPUT_DIR_NAME = "data/wenshu";
 
     public static void main(String[] args) {
         Map<String, AbstractSpider> spiderRegistry = createSpiderRegistry();
-        String spiderName = resolveSpiderName(args);
-        String outputPath = resolveOutputPath(args);
+        SpiderDevOptions options = SpiderDevOptions.parse(args);
+        if (options.listOnly()) {
+            printAvailableSpiders(spiderRegistry);
+            return;
+        }
+
+        String spiderName = options.resolveSpiderName();
+        String outputPath = options.resolveOutputPath();
 
         if (!spiderRegistry.containsKey(spiderName)) {
             System.err.println("Unknown spider: " + spiderName);
             System.err.println("Available spiders: " + String.join(", ", spiderRegistry.keySet()));
             throw new IllegalArgumentException("Unknown spider: " + spiderName);
         }
+
+        configureLoginSpiders(spiderRegistry.values(), options);
 
         CrawlerProperties crawlerProperties = new CrawlerProperties();
         crawlerProperties.setOutputPath(outputPath);
@@ -68,15 +90,50 @@ public class SpiderDevApplication {
             List.copyOf(spiderRegistry.values())
         );
 
+        clearDevOutputFile(outputPath, spiderName);
         System.out.println("Spider dev run start: " + spiderName);
         System.out.println("Output directory: " + outputPath);
         crawlerEngine.run(spiderName);
         System.out.println("Spider dev run finished: " + spiderName);
     }
 
+    private static void clearDevOutputFile(String outputPath, String spiderName) {
+        try {
+            Path filePath = Path.of(outputPath).resolve(spiderName + ".jsonl");
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            throw new IllegalStateException("clear spider dev output failed: " + spiderName, e);
+        }
+    }
+
+    private static void configureLoginSpiders(Collection<AbstractSpider> spiders, SpiderDevOptions options) {
+        LoginSupport loginSupport = new SeleniumManualLoginSupport(new LoginConsoleSupport());
+        LoginSessionManager loginSessionManager = new LoginSessionManager(
+            new FileLoginSessionStore(),
+            loginSupport,
+            options.refreshLogin(),
+            options.browserUserDataDir()
+        );
+        for (AbstractSpider spider : spiders) {
+            if (spider instanceof AbstractLoginSpider loginSpider) {
+                loginSpider.setLoginSessionManager(loginSessionManager);
+            }
+        }
+    }
+
+    private static void printAvailableSpiders(Map<String, AbstractSpider> spiderRegistry) {
+        System.out.println("Available spiders:");
+        spiderRegistry.values().forEach(spider -> {
+            String loginTag = spider instanceof LoginSpider ? " [login]" : "";
+            System.out.println("- " + spider.name() + loginTag + " : " + spider.getConfig().getDescription());
+        });
+    }
+
     private static Map<String, AbstractSpider> createSpiderRegistry() {
         Map<String, AbstractSpider> spiders = new LinkedHashMap<>();
         register(spiders, new TestSpider());
+        register(spiders, new LoginDemoSpider());
+        register(spiders, new WenshuCourtSpider());
         register(spiders, new WeiXinBQBSpider());
         register(spiders, new YujnApiSpider());
         return spiders;
@@ -86,31 +143,82 @@ public class SpiderDevApplication {
         spiders.put(spider.name(), spider);
     }
 
-    private static String resolveSpiderName(String[] args) {
-        if (args.length > 0 && args[0] != null && !args[0].isBlank()) {
-            return args[0].trim();
-        }
-        return DEFAULT_SPIDER_NAME;
-    }
+    private record SpiderDevOptions(
+        String spiderName,
+        String outputPath,
+        boolean listOnly,
+        boolean refreshLogin,
+        String browserUserDataDir
+    ) {
 
-    private static String resolveOutputPath(String[] args) {
-        if (args.length > 1 && args[1] != null && !args[1].isBlank()) {
-            return Path.of(args[1].trim()).toAbsolutePath().normalize().toString();
-        }
-        return resolveRepositoryRoot().resolve(DEFAULT_OUTPUT_DIR_NAME).toString();
-    }
+        private static SpiderDevOptions parse(String[] args) {
+            String spiderName = "";
+            String outputPath = "";
+            boolean listOnly = false;
+            boolean refreshLogin = false;
+            String browserUserDataDir = "";
+            List<String> positionalArgs = new ArrayList<>();
 
-    private static Path resolveRepositoryRoot() {
-        Path current = Path.of(System.getProperty("user.dir")).toAbsolutePath().normalize();
-        while (current != null) {
-            if (Files.exists(current.resolve("pom.xml"))
-                && Files.isDirectory(current.resolve("one-modules"))
-                && Files.isDirectory(current.resolve("one-common"))) {
-                return current;
+            for (int index = 0; index < args.length; index++) {
+                String arg = args[index];
+                if (arg == null || arg.isBlank()) {
+                    continue;
+                }
+                switch (arg) {
+                    case "--list" -> listOnly = true;
+                    case "--spider" -> {
+                        index++;
+                        spiderName = requireValue(args, index, arg);
+                    }
+                    case "--output" -> {
+                        index++;
+                        outputPath = normalizePath(requireValue(args, index, arg));
+                    }
+                    case "--refresh-login" -> refreshLogin = true;
+                    case "--browser-user-data-dir" -> {
+                        index++;
+                        browserUserDataDir = normalizePath(requireValue(args, index, arg));
+                    }
+                    default -> {
+                        if (arg.startsWith("--")) {
+                            throw new IllegalArgumentException("Unknown option: " + arg);
+                        }
+                        positionalArgs.add(arg.trim());
+                    }
+                }
             }
-            current = current.getParent();
+
+            if (spiderName.isBlank() && !positionalArgs.isEmpty()) {
+                spiderName = positionalArgs.get(0);
+            }
+            if (outputPath.isBlank() && positionalArgs.size() > 1) {
+                outputPath = normalizePath(positionalArgs.get(1));
+            }
+
+            return new SpiderDevOptions(spiderName, outputPath, listOnly, refreshLogin, browserUserDataDir);
         }
-        return Path.of(System.getProperty("user.dir")).toAbsolutePath().normalize();
+
+        private static String requireValue(String[] args, int index, String optionName) {
+            if (index >= args.length || args[index] == null || args[index].isBlank()) {
+                throw new IllegalArgumentException("Missing value for option: " + optionName);
+            }
+            return args[index].trim();
+        }
+
+        private static String normalizePath(String path) {
+            return Path.of(path.trim()).toAbsolutePath().normalize().toString();
+        }
+
+        private String resolveSpiderName() {
+            return spiderName == null || spiderName.isBlank() ? DEFAULT_SPIDER_NAME : spiderName.trim();
+        }
+
+        private String resolveOutputPath() {
+            if (outputPath != null && !outputPath.isBlank()) {
+                return outputPath;
+            }
+            return SpiderPaths.resolveRepositoryRoot().resolve(DEFAULT_OUTPUT_DIR_NAME).toString();
+        }
     }
 }
 

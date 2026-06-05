@@ -1,5 +1,8 @@
 package me.liwncy.common.crawler.core;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * 爬虫业务抽象基类。
  */
@@ -31,8 +34,16 @@ public abstract class AbstractSpider {
     public void afterFinish() {
     }
 
+    /**
+     * 当前运行时请求 Cookie。
+     */
+    public Map<String, String> getRequestCookies() {
+        return Collections.emptyMap();
+    }
+
     public String name() {
         return getConfig().getName();
     }
 }
+
 

@@ -445,11 +445,63 @@ http://localhost:9090/
 
 - IDE 直接运行：`me.liwncy.spiders.SpiderDevApplication`
 - 可在类内修改 `DEFAULT_SPIDER_NAME` 手动切换默认 spider
-- 也可通过命令行参数切换：第一个参数是 `spiderName`，第二个参数是输出目录
-- 默认输出目录为仓库根目录下的 `_data/`，而不是 `one-spiders` 运行目录下
+- 也支持命令行参数：`--list`、`--spider`、`--output`、`--refresh-login`、`--browser-user-data-dir`
+- 仍兼容旧的定位参数形式：第一个参数是 `spiderName`，第二个参数是输出目录
+- 默认输出目录为仓库根目录下的 `data/`，而不是 `one-spiders` 运行目录下
 - 输出目录支持指定为任意磁盘绝对路径，例如：`D:/crawler-output`
 - PowerShell 脚本：`scripts/run-spider-dev.ps1`
 - 例如运行 `yujn-api` 时，默认输出文件为：`<仓库根目录>/data/yujn-api-apifox.jsonl`
+
+登录型站点开发支持：
+
+- 登录型 Spider 可继承 `me.liwncy.spiders.support.login.AbstractLoginSpider`
+- 登录配置通过 `getLoginConfig()` 提供，当前内置的是 **Selenium + 人工登录/图片验证码** 方案
+- 登录态编排由 `LoginSessionManager` 负责，底层登录实现通过 `LoginSupport` 接口接入，当前默认实现为 `SeleniumManualLoginSupport`
+- 首次运行或登录态过期时，会自动打开浏览器，等待手工完成登录和验证码输入
+- 手工登录时程序会先自动检测是否已完成登录；如果长时间未检测到，再提示你回控制台按回车继续，避免浏览器还没输完账号密码程序就退出
+- 登录型任务会优先从受保护目标页进入；如果网站自动跳转到登录页，就在同一浏览器上下文中完成登录，再继续回到目标页面，避免登录成功后又被再次要求登录
+- 登录成功后会缓存 Cookie 到：`<仓库根目录>/data/auth/<spiderName>-session.json`
+- 下次运行会优先复用缓存登录态；如果需要强制重新登录，可追加 `--refresh-login`
+- 如果想复用本机 Chrome 资料目录，可追加 `--browser-user-data-dir "D:/ChromeProfile/SpiderDev"`
+- 已提供模板类：`me.liwncy.spiders.task.LoginDemoSpider`
+- 模板默认会出现在 `--list` 结果中，名称为 `login-demo`，你可以直接复制/改名或在原类上替换常量：`LOGIN_URL`、`PROTECTED_URL`、`BROWSER_USER_DATA_DIR`
+- 模板类里保留了 `readValue()` 示例，可通过系统属性或环境变量读取账号密码，例如：`spider.login.demo.username`
+- 模板还支持直接覆盖这些属性：`spider.login.demo.login-url`、`spider.login.demo.protected-url`、`spider.login.demo.session-ttl-minutes`、`spider.login.demo.manual-captcha`、`spider.login.demo.expected-keyword`
+- 如已知登录表单的 CSS 选择器，可继续配置：`spider.login.demo.username-selector`、`spider.login.demo.password-selector`、`spider.login.demo.submit-selector`，模板会自动填充账号密码并尝试点击提交
+- 如需在发现仍停留登录页时直接失败，可配置：`spider.login.demo.login-page-keyword`；默认 `fail-when-login-page-detected=true`
+- 如需在自动提交后额外等待页面跳转，可配置：`spider.login.demo.wait-after-submit-millis`
+- 例如通过脚本运行模板时，可这样传入系统属性：
+
+```powershell
+Set-Location "D:\Workspace\one-crawler"
+.\scripts\run-spider-dev.ps1 -SpiderName login-demo -RefreshLogin -SystemProperty @(
+    "spider.login.demo.login-url=https://example.com/login",
+    "spider.login.demo.protected-url=https://example.com/protected",
+    "spider.login.demo.expected-keyword=个人中心",
+    "spider.login.demo.login-page-keyword=登录",
+    "spider.login.demo.username-selector=input[name='username']",
+    "spider.login.demo.password-selector=input[type='password']",
+    "spider.login.demo.submit-selector=button[type='submit']"
+)
+```
+
+文书网开发任务：
+
+- 已新增任务：`me.liwncy.spiders.task.WenshuCourtSpider`
+- 任务名称：`wenshu-court`
+- 任务会先复用登录骨架获取 Cookie，再使用 Selenium 打开目标列表初始页、自动输入检索条件并从渲染后的 DOM 中提取：标题、法院、案号、裁判日期、裁判理由摘要、文书详情 `docId`、关联文书等信息
+- 默认目标页只保留列表页 `pageId`，不会再带之前遗留的 `s11` / `s16` 检索条件；如需指定检索条件，请通过 `spider.wenshu.court.target-url` 自行覆盖
+- 文书网任务默认会复用浏览器资料目录：`<仓库根目录>/data/browser/wenshu-court`，首次登录后下次可直接沿用同一浏览器登录态
+- 如果渲染失败，或搜索框未加载完成，会把最后拿到的页面源码落到：`<仓库根目录>/data/debug/wenshu-court-last-page.html`
+- 可覆盖的系统属性包括：`spider.wenshu.court.login-url`、`spider.wenshu.court.target-url`、`spider.wenshu.court.base-url`、`spider.wenshu.court.search-keyword`、`spider.wenshu.court.expected-keyword`、`spider.wenshu.court.browser-user-data-dir`、`spider.wenshu.court.render-wait-millis`
+
+```powershell
+Set-Location "D:\Workspace\one-crawler"
+.\scripts\run-spider-dev.ps1 -SpiderName wenshu-court -RefreshLogin -SystemProperty @(
+    "spider.wenshu.court.expected-keyword=（2018）鲁1482破申3号",
+    "spider.wenshu.court.render-wait-millis=10000"
+)
+```
 
 ---
 
