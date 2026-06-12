@@ -17,5 +17,12 @@ public interface SpiderPipeline {
      * 处理单条抓取结果。
      */
     void process(CrawlResult result, SpiderConfig config);
+
+    /**
+     * Spider 全部结束后调用，用于做汇总写入等收尾工作。
+     * 默认空实现，管道可重写。
+     */
+    default void afterFinish(SpiderConfig config) {
+    }
 }
 

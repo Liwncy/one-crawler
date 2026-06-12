@@ -19,18 +19,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 遇见 API 文档导出为 Apifox 导入文件的管道。
+ * 将爬虫结果导出为 Apifox 可导入的 JSONL 文件。
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class YujnApiApiFoxFilePipeline implements SpiderPipeline {
+public class ApifoxJsonlFilePipeline implements SpiderPipeline {
 
     private final CrawlerProperties crawlerProperties;
 
     @Override
     public String getName() {
-        return "yujn-apifox-file";
+        return "apifox-jsonl";
     }
 
     @Override
@@ -49,7 +49,7 @@ public class YujnApiApiFoxFilePipeline implements SpiderPipeline {
             payload.put("fileType", result.get("fileType"));
             payload.put("jsonPath", result.get("jsonPath"));
             payload.put("htmlInfo", htmlInfo);
-            payload.put("tags", List.of("yujn-api"));
+            payload.put("tags", List.of(config.getName()));
             Files.writeString(
                 filePath,
                 JSONUtil.toJsonStr(payload) + System.lineSeparator(),
@@ -58,10 +58,8 @@ public class YujnApiApiFoxFilePipeline implements SpiderPipeline {
                 StandardOpenOption.APPEND
             );
         } catch (IOException e) {
-            log.error("write yujn apifox file failed, spider={}", config.getName(), e);
-            throw new IllegalStateException("write yujn apifox file failed", e);
+            log.error("write apifox jsonl file failed, spider={}", config.getName(), e);
+            throw new IllegalStateException("write apifox jsonl file failed", e);
         }
     }
 }
-
-

@@ -51,3 +51,4 @@ nbdist/
 _out/
 data/
 logs/
+.github/

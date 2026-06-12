@@ -10,7 +10,9 @@ import me.liwncy.common.crawler.pipeline.ConsoleSpiderPipeline;
 import me.liwncy.common.crawler.pipeline.FileSpiderPipeline;
 import me.liwncy.common.crawler.pipeline.SpiderPipeline;
 import me.liwncy.spiders.pipeline.WeiXinBQBDownloadPipeline;
-import me.liwncy.spiders.pipeline.YujnApiApiFoxFilePipeline;
+import me.liwncy.spiders.pipeline.ApifoxJsonlFilePipeline;
+import me.liwncy.spiders.pipeline.SwaggerJsonlFilePipeline;
+import me.liwncy.spiders.task.PearApiSpider;
 import me.liwncy.spiders.support.SpiderPaths;
 import me.liwncy.spiders.support.login.AbstractLoginSpider;
 import me.liwncy.spiders.support.login.FileLoginSessionStore;
@@ -47,12 +49,12 @@ public class SpiderDevApplication {
     /**
      * 默认要运行的 spider，可在开发时手动切换。
      */
-    private static final String DEFAULT_SPIDER_NAME = WenshuCourtSpider.NAME;
+    private static final String DEFAULT_SPIDER_NAME = PearApiSpider.NAME;
 
     /**
      * 默认输出目录名称。
      */
-    private static final String DEFAULT_OUTPUT_DIR_NAME = "data/wenshu";
+    private static final String DEFAULT_OUTPUT_DIR_NAME = "_out/pearapi";
 
     public static void main(String[] args) {
         Map<String, AbstractSpider> spiderRegistry = createSpiderRegistry();
@@ -82,7 +84,8 @@ public class SpiderDevApplication {
             new ConsoleSpiderPipeline(),
             new FileSpiderPipeline(crawlerProperties),
             new WeiXinBQBDownloadPipeline(crawlerProperties),
-            new YujnApiApiFoxFilePipeline(crawlerProperties)
+            new ApifoxJsonlFilePipeline(crawlerProperties),
+            new SwaggerJsonlFilePipeline(crawlerProperties)
         );
 
         CrawlerEngine crawlerEngine = new CrawlerEngine(
@@ -136,6 +139,7 @@ public class SpiderDevApplication {
         register(spiders, new WenshuCourtSpider());
         register(spiders, new WeiXinBQBSpider());
         register(spiders, new YujnApiSpider());
+        register(spiders, new PearApiSpider());
         return spiders;
     }
 

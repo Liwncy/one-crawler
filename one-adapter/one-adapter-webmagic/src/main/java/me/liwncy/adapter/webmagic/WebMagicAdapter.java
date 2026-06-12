@@ -59,6 +59,14 @@ public class WebMagicAdapter implements FrameworkAdapter {
             }
         } finally {
             spider.afterFinish();
+            // 通知所有管道做汇总收尾
+            for (SpiderPipeline pipeline : resolvePipelines(config)) {
+                try {
+                    pipeline.afterFinish(config);
+                } catch (Exception e) {
+                    log.warn("pipeline afterFinish failed, pipeline={}", pipeline.getName(), e);
+                }
+            }
         }
     }
 

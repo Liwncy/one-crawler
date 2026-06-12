@@ -31,7 +31,7 @@ public class YujnApiSpider extends AbstractSpider {
             .framework(SpiderFramework.WEBMAGIC)
             .startUrls(List.of(ROOT_URL))
             .threadCount(5)
-            .pipelines(List.of("yujn-apifox-file"))
+            .pipelines(List.of("apifox-jsonl", "swagger-jsonl"))
             .build();
     }
 
